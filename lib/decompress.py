@@ -25,10 +25,15 @@ class decLogic():
     def decompArc(self, arcdir, outdir=None) -> str:
     # Decompress an archive to .tmp or desired path
         if not outdir:
-            outdir = self.selfdir + f"/.tmp/{stripFilename(getFilename(arcdir))}"
+            outdir = os.path.join(self.selfdir, f"/.tmp/{stripFilename(getFilename(arcdir))}")
             if os.path.exists(outdir):
                 shutil.rmtree(outdir)
         patoolib.extract_archive(arcdir, outdir=outdir)
+        return outdir
+    
+    def recuRead(self, pathdir) -> dict:
+    # Recursively list the structure of selected path
+        pass
 
     def analyzeSubmod(self, moddir) -> bool:
     # Analyze and store the structure of selected submod
