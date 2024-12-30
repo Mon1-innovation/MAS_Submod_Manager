@@ -1,20 +1,20 @@
 import os
 import json
 import structure
-import basicutils
 import decompress
+from basicutils import *
 
 class stemLogic():
     def __init__(self, gamedir):
-        self.selfdir, self.gamedir = os.path.split(os.path.realpath(__file__))[0].strip("/").strip("\\"), gamedir
+        self.selfdir, self.gamedir = getParent(os.path.split(os.path.realpath(__file__))[0]), gamedir
         if self.__class__.__name__ == "stemLogic":
             selfStructure = structure.selfStructure
             for folder in selfStructure:
-                dir = basicutils.getParent(self.selfdir) + "/" + folder
+                dir = self.selfdir + "/" + folder
                 if not os.path.exists(dir):
                     os.makedirs(dir)
             self.decInst = decompress.decLogic(self)
 
 
 if __name__ == "__main__":
-    a = stemLogic(r"D:\0submanager\mas_dummy")
+    a = stemLogic(r"D:\0submanager\dummy\mas_dummy")

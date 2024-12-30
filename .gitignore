@@ -3,3 +3,4 @@ log.txt
 test.py
 __pycache__
 dummy
+.tmp

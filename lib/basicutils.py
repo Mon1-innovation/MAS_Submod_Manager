@@ -10,6 +10,13 @@ def getFilename(dir) -> str:
         return filename
     except:
         return False
+    
+def stripFilename(filename) -> str:
+    try:
+        striped = re.match(r"^(.+)\.", filename)[1]
+        return striped
+    except:
+        return filename
 
 def getParent(dir) -> str:
     try:
@@ -23,4 +30,4 @@ def getParent(dir) -> str:
    
 
 if __name__ == "__main__":
-    print(getFilename(r"C:\Users\edge\Downloads\MAICA_ChatSubmod-1.1.18.zip"))
+    print(stripFilename(r"MAICA_ChatSubmod-1.1.18.zip"))
