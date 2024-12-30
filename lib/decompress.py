@@ -88,6 +88,9 @@ class decLogic():
         struct = self.recuRead(moddir)
         self.storStruct(struct, modname)
 
+    def findConflicts(self, name1, name2) -> list:
+        pass
+
     def installSubmod(self, moddir) -> bool:
     # Install the desired submod to gamedir.
         pass
