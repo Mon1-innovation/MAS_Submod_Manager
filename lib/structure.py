@@ -1,1 +1,1 @@
-selfStructure = [".tmp"]
+selfStructure = [".tmp", "storage"]

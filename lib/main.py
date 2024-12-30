@@ -1,12 +1,12 @@
 import os
 import json
-import MAS_Submod_Manager.lib.structure as structure
+import structure
 import basicutils
 import decompress
 
 class stemLogic():
     def __init__(self, gamedir):
-        self.selfdir, self.gamedir = os.path.split(os.path.realpath(__file__))[0], gamedir
+        self.selfdir, self.gamedir = os.path.split(os.path.realpath(__file__))[0].strip("/").strip("\\"), gamedir
         if self.__class__.__name__ == "stemLogic":
             selfStructure = structure.selfStructure
             for folder in selfStructure:

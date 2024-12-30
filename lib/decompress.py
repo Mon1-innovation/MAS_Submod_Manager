@@ -2,6 +2,7 @@ import os
 import json
 import patoolib
 import main
+import basicutils
 
 class decLogic(main.stemLogic):
     def __init__(self, stemInst):
@@ -17,8 +18,18 @@ class decLogic(main.stemLogic):
         except:
             return None
 
-    def installFromArc(self, arcdir) -> bool:
-    # Install the desired archive to gamedir.
+    def decompArc(self, arcdir, outdir=None) -> str:
+    # Decompress an archive to .tmp or desired path
+        if not outdir:
+            outdir = self.selfdir + f"/{}/.tmp"
+        patoolib.extract_archive(arcdir, outdir=outdir)
+
+    def analyzeSubmod(self, moddir) -> bool:
+    # Analyze and store the structure of selected submod
+
+
+    def installSubmod(self, moddir) -> bool:
+    # Install the desired submod to gamedir.
         pass
 
 if __name__ == "__main__":
