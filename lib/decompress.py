@@ -1,4 +1,5 @@
 import os
+import copy
 import shutil
 import patoolib
 from basicutils import *
@@ -31,9 +32,49 @@ class decLogic():
         patoolib.extract_archive(arcdir, outdir=outdir)
         return outdir
     
-    def recuRead(self, pathdir) -> dict:
+    def recuRead(self, pathdir) -> list:
     # Recursively list the structure of selected path
-        pass
+        filesDict, dirsDict = {}, {}
+        for base, dirs, files in os.walk(pathdir, topdown=False):
+            for dir in files:
+                dlist = breakDir(os.path.join(base, dir))
+                shovelDict(filesDict, dlist)
+            for dir in dirs:
+                dlist = breakDir(os.path.join(base, dir))
+                shovelDict(dirsDict, dlist)
+        filesDict = stripDict(filesDict, breakDir(pathdir))
+        dirsDict = stripDict(dirsDict, breakDir(pathdir))
+        dictCombined = [filesDict, dirsDict]
+        return dictCombined
+    
+    def recuComp(self, dict1, dict2) -> list:
+        compSignal = []
+        def launchComp(routeList):
+            nonlocal compSignal
+            dict0c = dict2
+            for jump in routeList:
+                if jump in dict0c:
+                    dict0c = dict0c[jump]
+                    if routeList.index(jump) >= len(routeList) - 1:
+                        compSignal.append(os.path.join(*[str(s) for s in routeList]))
+                else:
+                    break
+                    
+        def recuTravel(dict0, callable, recuCarriage=[]):
+            for k, v in dict0.items():
+                spawnedCarriage = copy.copy(recuCarriage)
+                spawnedCarriage.append(k)
+                if len(v) > 0:
+                    recuTravel(v, callable, spawnedCarriage)
+                else:
+                    callable(spawnedCarriage)
+        recuTravel(dict1, launchComp)
+        print(compSignal)
+        return compSignal
+    
+    def storStruct(self, struct, name) -> None:
+        with open(os.path.join(self.selfdir, f"storage/{name}"), "w", encoding="utf-8") as store:
+            store.write(str(struct))
 
     def analyzeSubmod(self, moddir) -> bool:
     # Analyze and store the structure of selected submod
@@ -45,5 +86,7 @@ class decLogic():
 
 if __name__ == "__main__":
     b=decLogic()
-    b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
+    #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
+    #b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18")
+    b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
 

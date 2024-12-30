@@ -10,7 +10,7 @@ class stemLogic():
         if self.__class__.__name__ == "stemLogic":
             selfStructure = structure.selfStructure
             for folder in selfStructure:
-                dir = self.selfdir + "/" + folder
+                dir = os.path.join(self.selfdir, folder)
                 if not os.path.exists(dir):
                     os.makedirs(dir)
             self.decInst = decompress.decLogic(self)
