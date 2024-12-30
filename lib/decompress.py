@@ -1,4 +1,5 @@
 import os
+import json
 import copy
 import shutil
 import patoolib
@@ -14,7 +15,7 @@ class decLogic():
             self.gamedir = None
 
     def verifyArc(self, arcdir) -> bool:
-    # Verify if an archive is intact. None indicates path/fs issue.
+    # Verify if an archive is intact. None indicates path/fs issue
         try:
             patoolib.test_archive(arcdir)
             return True
@@ -48,6 +49,7 @@ class decLogic():
         return dictCombined
     
     def recuComp(self, dict1, dict2) -> list:
+    # Recursively compare two dicted file structures
         compSignal = []
         def launchComp(routeList):
             nonlocal compSignal
@@ -73,12 +75,18 @@ class decLogic():
         return compSignal
     
     def storStruct(self, struct, name) -> None:
-        with open(os.path.join(self.selfdir, f"storage/{name}"), "w", encoding="utf-8") as store:
-            store.write(str(struct))
+    # Just writting something into a file
+    # Maybe we should use SQLite instead?
+        with open(os.path.join(self.selfdir, f"storage/{name}.json"), "w", encoding="utf-8") as store:
+            store.write(json.dumps(struct))
 
     def analyzeSubmod(self, moddir) -> bool:
     # Analyze and store the structure of selected submod
-        pass
+        if self.verifyArc(moddir):
+            moddir = self.decompArc(moddir)
+        modname = getFilename(moddir)
+        struct = self.recuRead(moddir)
+        self.storStruct(struct, modname)
 
     def installSubmod(self, moddir) -> bool:
     # Install the desired submod to gamedir.
@@ -88,5 +96,6 @@ if __name__ == "__main__":
     b=decLogic()
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18")
-    b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
+    #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
+    b.analyzeSubmod(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
 
