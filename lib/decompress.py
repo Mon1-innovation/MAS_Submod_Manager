@@ -144,10 +144,12 @@ class decLogic():
         print(compSignal)
         return compSignal
     
-    def storStruct(self, struct, name) -> None:
+    def storStruct(self, struct, name, cato='') -> None:
     # Just writting something into a file
     # Maybe we should use SQLite instead?
-        with open(os.path.join(self.selfdir, f"storage/{name}.json"), "w", encoding="utf-8") as store:
+        if cato:
+            cato += "/"
+        with open(os.path.join(self.selfdir, f"storage/{cato}{name}.json"), "w", encoding="utf-8") as store:
             store.write(json.dumps(struct))
 
     def analyzeSubmod(self, moddir) -> bool:
@@ -168,7 +170,12 @@ class decLogic():
             for s in struct[1:]:
                 storing.append(stripDict(s, breakDir(relPath)))
             uname = combUname(modname, subOrSpr, modver)
-            self.storStruct(storing, uname)
+            match subOrSpr:
+                case 1:
+                    cato = "submods"
+                case 2:
+                    cato = "spritepacks"
+            self.storStruct(storing, uname, cato)
 
     def findConflicts(self, name1, name2) -> list:
         pass
@@ -182,6 +189,6 @@ if __name__ == "__main__":
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
     #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
-    b.analyzeSubmod(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18")
+    b.analyzeSubmod(r"D:\0submanager\dummy\sprite_dummy")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
 
