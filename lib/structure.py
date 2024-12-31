@@ -1,1 +1,1 @@
-selfStructure = [".tmp", "storage", "storage/spritepacks", "storage/submods"]
+selfStructure = [".tmp", "storage/local/submods", "storage/local/spritepacks", "storage/remote/submods", "storage/remote/spritepacks"]

@@ -160,7 +160,7 @@ class decLogic():
     # Just reading something from a file
         if cato:
             cato += "/"
-        with open(joinPath(self.selfdir, f"storage/{cato}{name}.json"), "r", encoding="utf-8") as store:
+        with open(joinPath(self.selfdir, f"storage/local/{cato}{name}.json"), "r", encoding="utf-8") as store:
             return json.loads(store.read())
 
     def storStruct(self, struct, name, cato='') -> None:
@@ -168,7 +168,7 @@ class decLogic():
     # Maybe we should use SQLite instead?
         if cato:
             cato += "/"
-        with open(joinPath(self.selfdir, f"storage/{cato}{name}.json"), "w", encoding="utf-8") as store:
+        with open(joinPath(self.selfdir, f"storage/local/{cato}{name}.json"), "w", encoding="utf-8") as store:
             store.write(json.dumps(struct))
 
     def analyzeSubmod(self, moddir) -> bool:
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
     #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
-    #b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\submod_dum")
+    b.analyzeSubmod(r"D:\0submanager\dummy\sprite_dummy")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
     #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
     #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
