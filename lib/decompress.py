@@ -57,13 +57,13 @@ class decLogic():
         dictCombined = [readSignal, filesDict, dirsDict]
         return dictCombined
     
-    def findModbase(self, dict1) -> list:
+    def findModbase(self, dict1) -> str:
     # Find the mod basedir, like containing game folder
     # Will combine a signal of which type this mod belongs
     # Signal 1 for simple submod containing Submods folder only
     # Signal 2 for submods with game folder
     # Signal 3 for submods with game sibling folders like lib
-    # Signal 5 for sprite packs
+    # Only applies to submods. Spritepacks should be processed already
         typeSignal = 0
         searchSignal = None
         def recuSearch(dict0, pattern, recuCarriage=[], searchAll=False):
@@ -116,17 +116,7 @@ class decLogic():
             else:
             # Setting basedir to Submods
                 basedir = os.path.join(*searchSignal, "Submods")
-        else:
-        # It is not a submod
-        # What about spritepack
-            searchSignal = None
-            recuSearch(dict1, "mod_assets", searchAll=True)
-            print(searchSignal)
-                
-                
-
-
-
+        return basedir
 
     def recuComp(self, dict1, dict2) -> list:
     # Recursively compare two dicted file structures
