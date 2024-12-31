@@ -15,14 +15,12 @@ class decLogic():
             self.gamedir = None
 
     def verifyArc(self, arcdir) -> bool:
-    # Verify if an archive is intact. None indicates path/fs issue
+    # Verify if an archive is intact
         try:
             patoolib.test_archive(arcdir)
             return True
-        except patoolib.PatoolError:
-            return False
         except:
-            return None
+            return False
 
     def decompArc(self, arcdir, outdir=None) -> str:
     # Decompress an archive to .tmp or desired path
@@ -35,6 +33,7 @@ class decLogic():
     
     def recuRead(self, pathdir) -> list:
     # Recursively list the structure of selected path
+        readSignal = []
         filesDict, dirsDict = {}, {}
         for base, dirs, files in os.walk(pathdir, topdown=False):
             for dir in files:
@@ -42,12 +41,93 @@ class decLogic():
                 shovelDict(filesDict, dlist)
             for dir in dirs:
                 dlist = breakDir(os.path.join(base, dir))
+                if dlist[-2] == "Submods" and not readSignal:
+                # A submod detected
+                    signalAppending = [dlist[-1], 1, os.path.join(*dlist[:-3])[len(pathdir):]]
+                    if not signalAppending in readSignal:
+                        readSignal.append(signalAppending)
+                elif dlist[-1] == "mod_assets" and not "Submods" in stripDict(dirsDict, dlist[:-1]):
+                # A spritepack detected
+                    signalAppending = [dlist[-2], 2, os.path.join(*dlist[:-1])[len(pathdir):]]
+                    if not signalAppending in readSignal:
+                        readSignal.append(signalAppending)
                 shovelDict(dirsDict, dlist)
         filesDict = stripDict(filesDict, breakDir(pathdir))
         dirsDict = stripDict(dirsDict, breakDir(pathdir))
-        dictCombined = [filesDict, dirsDict]
+        dictCombined = [readSignal, filesDict, dirsDict]
         return dictCombined
     
+    def findModbase(self, dict1) -> list:
+    # Find the mod basedir, like containing game folder
+    # Will combine a signal of which type this mod belongs
+    # Signal 1 for simple submod containing Submods folder only
+    # Signal 2 for submods with game folder
+    # Signal 3 for submods with game sibling folders like lib
+    # Signal 5 for sprite packs
+        typeSignal = 0
+        searchSignal = None
+        def recuSearch(dict0, pattern, recuCarriage=[], searchAll=False):
+            nonlocal searchSignal
+            if searchSignal == None or searchAll:
+                for k, v in dict0.items():
+                    if not k == pattern:
+                        pass
+                    else:
+                        if not searchAll:
+                            searchSignal = recuCarriage
+                        else:
+                            if searchSignal == None:
+                                searchSignal = []
+                            searchSignal.append(recuCarriage)
+                for k, v in dict0.items():
+                    spawnedCarriage = copy.copy(recuCarriage)
+                    spawnedCarriage.append(k)
+                    recuSearch(dict0[k], pattern, spawnedCarriage)
+        recuSearch(dict1, "Submods")
+        if isinstance(searchSignal, list):
+        # It is a submod
+            typeSignal += 1
+            # now we want to know if it has game folder
+            if len(searchSignal) and searchSignal[-1] == "game":
+            # Sure it does
+                typeSignal += 1
+                # And if any siblings
+                dictTemp = dict1
+                sibsList = []
+                ignList = [r"\.vscode", r"\.git", r"\.gitignore", r".*readme.*", r".*copyright.*", r".*document.*", r".*\.txt", r".*\.md"]
+                comIgnList = []
+                for i in ignList:
+                    comIgnList.append(re.compile(i, re.I))
+                for f in searchSignal[:-1]:
+                    dictTemp = dictTemp[f]
+                for k, v in dictTemp.items():
+                    sibsList.append(k)
+                for c in comIgnList:
+                    for k in sibsList:
+                        if c.match(k):
+                            sibsList.remove(k)
+                if len(sibsList) > 1:
+                # Sure there are
+                    typeSignal += 1
+                    basedir = os.path.join(*searchSignal[:-1])
+                else:
+                #Setting basedir to game
+                    basedir = os.path.join(*searchSignal)
+            else:
+            # Setting basedir to Submods
+                basedir = os.path.join(*searchSignal, "Submods")
+        else:
+        # It is not a submod
+        # What about spritepack
+            searchSignal = None
+            recuSearch(dict1, "mod_assets", searchAll=True)
+            print(searchSignal)
+                
+                
+
+
+
+
     def recuComp(self, dict1, dict2) -> list:
     # Recursively compare two dicted file structures
         compSignal = []
@@ -84,9 +164,21 @@ class decLogic():
     # Analyze and store the structure of selected submod
         if self.verifyArc(moddir):
             moddir = self.decompArc(moddir)
-        modname = getFilename(moddir)
         struct = self.recuRead(moddir)
-        self.storStruct(struct, modname)
+        # This may contain multiple mods
+        for metadata in struct[0]:
+            modname = metadata[0]
+            subOrSpr = metadata[1]
+            relPath = metadata[2]
+            print(relPath)
+            modver = tryVersion(getFilename(relPath))
+            if modver == "unknown":
+                modver = tryVersion(getFilename(moddir))
+            storing = []
+            for s in struct[1:]:
+                storing.append(stripDict(s, breakDir(relPath)))
+            uname = combUname(modname, subOrSpr, modver)
+            self.storStruct(storing, uname)
 
     def findConflicts(self, name1, name2) -> list:
         pass
@@ -98,7 +190,8 @@ class decLogic():
 if __name__ == "__main__":
     b=decLogic()
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
-    #b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18")
+    #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
     #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
-    b.analyzeSubmod(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
+    b.analyzeSubmod(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18")
+    #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
 
