@@ -2,6 +2,7 @@ import os
 import json
 import copy
 import shutil
+import sqlite3
 import patoolib
 from basicutils import *
 
@@ -13,6 +14,10 @@ class decLogic():
         else:
             self.selfdir = getParent(os.path.split(os.path.realpath(__file__))[0])
             self.gamedir = None
+        self.conn = sqlite3.connect(joinPath(self.selfdir, ".db/meta.db"))
+
+    def __del__(self):
+        self.conn.close()
 
     def verifyArc(self, arcdir) -> bool:
     # Verify if an archive is intact
@@ -156,20 +161,38 @@ class decLogic():
         recuTravel(dict1, launchComp)
         return compSignal
     
-    def readStruct(self, name, cato='') -> dict:
-    # Just reading something from a file
-        if cato:
-            cato += "/"
-        with open(joinPath(self.selfdir, f"storage/local/{cato}{name}.json"), "r", encoding="utf-8") as store:
-            return json.loads(store.read())
+    def readStruct(self, table, conds, andor=True) -> tuple:
+    # Just reading something from db
+        sentence = ''
+        for k, v in conds.items():
+            if sentence:
+                sentence += "AND" if andor else "OR"
+            sentence += f'{k}="{v}"'
+        cu = self.conn.cursor()
+        res = cu.execute(f"SELECT * FROM {table} WHERE {sentence}")
+        return tuple(res)
 
-    def storStruct(self, struct, name, cato='') -> None:
-    # Just writting something into a file
-    # Maybe we should use SQLite instead?
-        if cato:
-            cato += "/"
-        with open(joinPath(self.selfdir, f"storage/local/{cato}{name}.json"), "w", encoding="utf-8") as store:
-            store.write(json.dumps(struct))
+    def storStruct(self, table, conds, stores, andor=True) -> None:
+    # Just writting something into db
+        sentence = ''
+        ids = []
+        cu = self.conn.cursor()
+        if conds:
+            for k, v in conds.items():
+                if sentence:
+                    sentence += "AND" if andor else "OR"
+                sentence += f'{k}="{v}"'
+            res1 = cu.execute(f"SELECT * FROM {table} WHERE {sentence}")
+            for r in res1:
+                ids.append(r[0])
+        if not len(ids):
+            values = "','".join(stores)
+            print(values)
+            res2 = cu.execute(f'''INSERT INTO {table} (susp_name, real_name, susp_vers, real_vers, type, path, structure, props) VALUES ('{values}')''')
+        else:
+            for id in ids:
+                res2 = cu.execute(f'UPDATE {table} SET susp_name="{stores[0]}", real_name="{stores[1]}", susp_vers="{stores[2]}", real_vers="{stores[3]}", type="{stores[4]}", path="{stores[5]}", structure="{stores[6]}", props="{stores[7]}" WHERE id=?', (id))
+        self.conn.commit()
 
     def analyzeSubmod(self, moddir) -> bool:
     # Analyze and store the structure of selected mod
@@ -188,11 +211,11 @@ class decLogic():
             uname = combUname(modname, subOrSpr, modver)
             match subOrSpr:
                 case 1:
-                    cato = "submods"
+                    categ = "submods"
                 case 2:
-                    cato = "spritepacks"
-            storing = {"name": modname, "realname": "", "version": modver, "type": cato, "path": joinPath(moddir, relPath.strip("/").strip("\\")), "structure": stripDict(struct[1], breakDir(relPath))}
-            self.storStruct(storing, uname, cato)
+                    categ = "spritepacks"
+            stores = [modname, '', modver, '', categ, joinPath(moddir, relPath.strip("/").strip("\\")), json.dumps(stripDict(struct[1], breakDir(relPath)), ensure_ascii=False), '']
+            self.storStruct("local_meta", None, stores)
 
     def verifySubmod(self, metadata, basedir=None) -> list:
     # Check integrity of selected pathtree

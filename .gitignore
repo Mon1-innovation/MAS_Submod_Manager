@@ -4,3 +4,4 @@ test.py
 __pycache__
 dummy
 .tmp
+.db

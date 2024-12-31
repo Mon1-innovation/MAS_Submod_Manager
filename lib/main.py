@@ -1,5 +1,6 @@
 import os
 import json
+import sqlite3
 import structure
 import decompress
 from basicutils import *
@@ -13,8 +14,29 @@ class stemLogic():
                 dir = os.path.join(self.selfdir, folder)
                 if not os.path.exists(dir):
                     os.makedirs(dir)
+            try:
+                conn = sqlite3.connect(joinPath(self.selfdir, ".db/meta.db"), )
+                cu = conn.cursor()
+                for table in structure.dbStructure:
+                    res = cu.execute('SELECT * FROM sqlite_master WHERE type="table" AND name=?', (table,))
+                    if not len(tuple(res)):
+                        cu.execute(
+                            f'''CREATE TABLE {table}
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            susp_name       TEXT,
+                            real_name       TEXT,
+                            susp_vers       TEXT,
+                            real_vers       TEXT,
+                            type            TEXT,
+                            path            TEXT,
+                            structure       TEXT,
+                            props           TEXT
+                            );'''
+                        )
+            finally:
+                conn.commit()
+                conn.close()
             self.decInst = decompress.decLogic(self)
-
 
 if __name__ == "__main__":
     a = stemLogic(r"D:\0submanager\dummy\mas_dummy")

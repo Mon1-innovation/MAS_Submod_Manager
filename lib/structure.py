@@ -1,1 +1,2 @@
-selfStructure = [".tmp", "storage/local/submods", "storage/local/spritepacks", "storage/remote/submods", "storage/remote/spritepacks"]
+selfStructure = [".tmp", ".db"]
+dbStructure = ["local_meta", "remote_meta"]
