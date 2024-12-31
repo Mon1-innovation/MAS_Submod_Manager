@@ -191,7 +191,7 @@ class decLogic():
                     cato = "submods"
                 case 2:
                     cato = "spritepacks"
-            storing = {"name": modname, "version": modver, "type": cato, "path": joinPath(moddir, relPath.strip("/").strip("\\")), "structure": stripDict(struct[1], breakDir(relPath))}
+            storing = {"name": modname, "realname": "", "version": modver, "type": cato, "path": joinPath(moddir, relPath.strip("/").strip("\\")), "structure": stripDict(struct[1], breakDir(relPath))}
             self.storStruct(storing, uname, cato)
 
     def verifySubmod(self, metadata, basedir=None) -> list:
@@ -224,8 +224,7 @@ if __name__ == "__main__":
     b=decLogic()
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
-    #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
-    b.analyzeSubmod(r"D:\0submanager\dummy\sprite_dummy")
+    b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
     #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
     #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
