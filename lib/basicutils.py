@@ -6,6 +6,13 @@ def readJson(dir) -> list:
     with open(dir, "r", encoding="utf-8") as j:
         return json.loads(j.read())
 
+def joinPath(*args) -> str:
+    prePath = os.path.join(*args)
+    prePath1, prePath2 = prePath[:2], prePath[2:]
+    prePath1 = prePath1.replace(":", ":/", 1)
+    postPath = prePath1 + prePath2
+    return os.path.normpath(postPath)
+
 def getFilename(dir) -> str:
     try:
         parent = re.search(r"^.*/(.*?)$", os.path.normpath(dir).replace("\\", "/"))[1]
@@ -22,7 +29,7 @@ def stripFilename(filename) -> str:
 
 def tryVersion(filename) -> str:
     try:
-        version = re.findall("([0-9][-_.0-9A-Fa-f]*[-_0-9A-Fa-f])", filename)[-1]
+        version = re.findall("([0-9][-_.0-9A-Fa-f]*[0-9A-Fa-f])", filename)[-1]
         return version
     except:
         return "unknown"
@@ -36,6 +43,9 @@ def getParent(dir) -> str:
 
 def breakDir(dir) -> list:
     chops = re.split("/", os.path.normpath(dir).replace("\\", "/"))
+    for c in chops:
+        if not c:
+            chops.remove(c)
     return chops
 
 def shovelDict(dict, chops) -> None:

@@ -25,7 +25,7 @@ class decLogic():
     def decompArc(self, arcdir, outdir=None) -> str:
     # Decompress an archive to .tmp or desired path
         if not outdir:
-            outdir = os.path.join(self.selfdir, f"/.tmp/{stripFilename(getFilename(arcdir))}")
+            outdir = joinPath(self.selfdir, f".tmp/{stripFilename(getFilename(arcdir))}")
             if os.path.exists(outdir):
                 shutil.rmtree(outdir)
         patoolib.extract_archive(arcdir, outdir=outdir)
@@ -37,30 +37,40 @@ class decLogic():
         filesDict, dirsDict = {}, {}
         for base, dirs, files in os.walk(pathdir, topdown=False):
             for dir in files:
-                dlist = breakDir(os.path.join(base, dir))
+                dlist = breakDir(joinPath(base, dir))
                 shovelDict(filesDict, dlist)
             for dir in dirs:
-                dlist = breakDir(os.path.join(base, dir))
+                dlist = breakDir(joinPath(base, dir))
                 if dlist[-2] == "Submods" and not readSignal:
                 # A submod detected
-                    signalAppending = [dlist[-1], 1, os.path.join(*dlist[:-3])[len(pathdir):]]
+                    j = -3
+                    for i in [-1, -2, -3]:
+                    # Leak prevention: limit operations in pathdir
+                        try:
+                            if len(joinPath(*dlist[:i])) < len(pathdir):
+                                j = i + 1
+                        except:
+                            j = i + 1
+                    signalAppending = [dlist[-1], 1, joinPath(*dlist[:j])[len(pathdir):]]
                     if not signalAppending in readSignal:
                         readSignal.append(signalAppending)
                 elif dlist[-1] == "mod_assets" and not "Submods" in stripDict(dirsDict, dlist[:-1]):
                 # A spritepack detected
-                    signalAppending = [dlist[-2], 2, os.path.join(*dlist[:-1])[len(pathdir):]]
+                    signalAppending = [dlist[-2], 2, joinPath(*dlist[:-1])[len(pathdir):]]
                     if not signalAppending in readSignal:
                         readSignal.append(signalAppending)
                 shovelDict(dirsDict, dlist)
         filesDict = stripDict(filesDict, breakDir(pathdir))
         dirsDict = stripDict(dirsDict, breakDir(pathdir))
-        dictCombined = [readSignal, filesDict, dirsDict]
+        dirsDict.update(filesDict)
+        dictCombined = [readSignal, filesDict]
         return dictCombined
     
     def findModbase(self, dict1) -> str:
     # Find the mod basedir, like containing game folder
     # Will combine a signal of which type this mod belongs
-    # Signal 1 for simple submod containing Submods folder only
+    # Signal 0 for no signal; likely submod package only
+    # Signal 1 for submods containing Submods folder
     # Signal 2 for submods with game folder
     # Signal 3 for submods with game sibling folders like lib
     # Only applies to submods. Spritepacks should be processed already
@@ -109,14 +119,17 @@ class decLogic():
                 if len(sibsList) > 1:
                 # Sure there are
                     typeSignal += 1
-                    basedir = os.path.join(*searchSignal[:-1])
+                    basedir = joinPath(*searchSignal[:-1])
                 else:
                 #Setting basedir to game
-                    basedir = os.path.join(*searchSignal)
+                    basedir = joinPath(*searchSignal)
             else:
             # Setting basedir to Submods
-                basedir = os.path.join(*searchSignal, "Submods")
-        return basedir
+                basedir = joinPath(*searchSignal, "Submods")
+        else:
+        # No signal found, suspecting it should be installed directly
+            basedir = None
+        return typeSignal, basedir
 
     def recuComp(self, dict1, dict2) -> list:
     # Recursively compare two dicted file structures
@@ -128,7 +141,7 @@ class decLogic():
                 if jump in dict0c:
                     dict0c = dict0c[jump]
                     if routeList.index(jump) >= len(routeList) - 1:
-                        compSignal.append(os.path.join(*[str(s) for s in routeList]))
+                        compSignal.append(joinPath(*[str(s) for s in routeList]))
                 else:
                     break
                     
@@ -149,11 +162,11 @@ class decLogic():
     # Maybe we should use SQLite instead?
         if cato:
             cato += "/"
-        with open(os.path.join(self.selfdir, f"storage/{cato}{name}.json"), "w", encoding="utf-8") as store:
+        with open(joinPath(self.selfdir, f"storage/{cato}{name}.json"), "w", encoding="utf-8") as store:
             store.write(json.dumps(struct))
 
     def analyzeSubmod(self, moddir) -> bool:
-    # Analyze and store the structure of selected submod
+    # Analyze and store the structure of selected mod
         if self.verifyArc(moddir):
             moddir = self.decompArc(moddir)
         struct = self.recuRead(moddir)
@@ -166,22 +179,21 @@ class decLogic():
             modver = tryVersion(getFilename(relPath))
             if modver == "unknown":
                 modver = tryVersion(getFilename(moddir))
-            storing = []
-            for s in struct[1:]:
-                storing.append(stripDict(s, breakDir(relPath)))
             uname = combUname(modname, subOrSpr, modver)
             match subOrSpr:
                 case 1:
                     cato = "submods"
                 case 2:
                     cato = "spritepacks"
+            print(moddir)
+            storing = {"name": modname, "version": modver, "type": cato, "path": joinPath(moddir, relPath.strip("/").strip("\\")), "structure": stripDict(struct[1], breakDir(relPath))}
             self.storStruct(storing, uname, cato)
 
     def findConflicts(self, name1, name2) -> list:
         pass
 
     def installSubmod(self, moddir) -> bool:
-    # Install the desired submod to gamedir.
+    # Install the desired submod to gamedir
         pass
 
 if __name__ == "__main__":
