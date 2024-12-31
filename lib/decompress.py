@@ -187,11 +187,12 @@ class decLogic():
                 ids.append(r[0])
         if not len(ids):
             values = "','".join(stores)
-            print(values)
             res2 = cu.execute(f'''INSERT INTO {table} (susp_name, real_name, susp_vers, real_vers, type, path, structure, props) VALUES ('{values}')''')
         else:
             for id in ids:
-                res2 = cu.execute(f'UPDATE {table} SET susp_name="{stores[0]}", real_name="{stores[1]}", susp_vers="{stores[2]}", real_vers="{stores[3]}", type="{stores[4]}", path="{stores[5]}", structure="{stores[6]}", props="{stores[7]}" WHERE id=?', (id))
+                storesWithId = copy.deepcopy(stores)
+                storesWithId.append(id)
+                res2 = cu.execute(f'UPDATE {table} SET susp_name=?, real_name=?, susp_vers=?, real_vers=?, type=?, path=?, structure=?, props=? WHERE id=?', (storesWithId))
         self.conn.commit()
 
     def analyzeSubmod(self, moddir) -> bool:
@@ -204,18 +205,17 @@ class decLogic():
             modname = metadata[0]
             subOrSpr = metadata[1]
             relPath = metadata[2]
-            print(relPath)
             modver = tryVersion(getFilename(relPath))
             if modver == "unknown":
                 modver = tryVersion(getFilename(moddir))
             uname = combUname(modname, subOrSpr, modver)
             match subOrSpr:
                 case 1:
-                    categ = "submods"
+                    categ = "submod"
                 case 2:
-                    categ = "spritepacks"
+                    categ = "spritepack"
             stores = [modname, '', modver, '', categ, joinPath(moddir, relPath.strip("/").strip("\\")), json.dumps(stripDict(struct[1], breakDir(relPath)), ensure_ascii=False), '']
-            self.storStruct("local_meta", None, stores)
+            self.storStruct("local_meta", {"susp_name": modname}, stores)
 
     def verifySubmod(self, metadata, basedir=None) -> list:
     # Check integrity of selected pathtree
@@ -235,7 +235,13 @@ class decLogic():
                 recuVerify(dict0[k], spawnedCarriage)
         recuVerify(metadata["structure"])
         return verifySignal
-            
+
+    def listAvaliables(self, table) -> list:
+    # Use this to list all avaliable mods from selected table
+        cu = self.conn.cursor()
+        res = cu.execute(f"SELECT * FROM {table}")
+        return list(res)
+
     def findConflicts(self, name1, name2) -> list:
         pass
 
@@ -247,8 +253,9 @@ if __name__ == "__main__":
     b=decLogic()
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
-    b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18")
+    b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
     #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
     #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
+    #print(b.listAvaliables("local_meta"))
 

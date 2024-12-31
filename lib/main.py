@@ -33,6 +33,11 @@ class stemLogic():
                             props           TEXT
                             );'''
                         )
+                # DB structure:
+                # susp_name and susp_vers are names and versions extracted from file/folder name.
+                # Once manager could communicate with the MAS exporter, we should compare susp_names
+                # with corresponding path names, and add their real_name and real_vers.
+                # A type can be either "submods" or "spritepacks".
             finally:
                 conn.commit()
                 conn.close()
