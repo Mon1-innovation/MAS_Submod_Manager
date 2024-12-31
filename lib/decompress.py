@@ -141,7 +141,7 @@ class decLogic():
                 if jump in dict0c:
                     dict0c = dict0c[jump]
                     if routeList.index(jump) >= len(routeList) - 1:
-                        compSignal.append(joinPath(*[str(s) for s in routeList]))
+                        compSignal.append(joinPath(*routeList))
                 else:
                     break
                     
@@ -154,9 +154,15 @@ class decLogic():
                 else:
                     callable(spawnedCarriage)
         recuTravel(dict1, launchComp)
-        print(compSignal)
         return compSignal
     
+    def readStruct(self, name, cato='') -> dict:
+    # Just reading something from a file
+        if cato:
+            cato += "/"
+        with open(joinPath(self.selfdir, f"storage/{cato}{name}.json"), "r", encoding="utf-8") as store:
+            return json.loads(store.read())
+
     def storStruct(self, struct, name, cato='') -> None:
     # Just writting something into a file
     # Maybe we should use SQLite instead?
@@ -185,14 +191,32 @@ class decLogic():
                     cato = "submods"
                 case 2:
                     cato = "spritepacks"
-            print(moddir)
             storing = {"name": modname, "version": modver, "type": cato, "path": joinPath(moddir, relPath.strip("/").strip("\\")), "structure": stripDict(struct[1], breakDir(relPath))}
             self.storStruct(storing, uname, cato)
 
+    def verifySubmod(self, metadata, basedir=None) -> list:
+    # Check integrity of selected pathtree
+        if not basedir:
+            basedir = metadata["path"]
+        verifySignal = []
+        def recuVerify(dict0, recuCarriage=[]):
+            nonlocal verifySignal, basedir
+            for k, v in dict0.items():
+                if os.path.exists(joinPath(basedir, *recuCarriage, k)):
+                    pass
+                else:
+                    verifySignal.append(joinPath(basedir, *recuCarriage, k))
+            for k, v in dict0.items():
+                spawnedCarriage = copy.copy(recuCarriage)
+                spawnedCarriage.append(k)
+                recuVerify(dict0[k], spawnedCarriage)
+        recuVerify(metadata["structure"])
+        return verifySignal
+            
     def findConflicts(self, name1, name2) -> list:
         pass
 
-    def installSubmod(self, moddir) -> bool:
+    def installSubmod(self, metadata) -> bool:
     # Install the desired submod to gamedir
         pass
 
@@ -201,6 +225,8 @@ if __name__ == "__main__":
     #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
     #b.recuComp({1:{},2:{3:{}}},{2:{4:{},3:{}}})
-    b.analyzeSubmod(r"D:\0submanager\dummy\sprite_dummy")
+    #b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\submod_dum")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
+    #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
+    #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
 
