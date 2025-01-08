@@ -1,29 +1,42 @@
 ﻿I'm sorry, but an uncaught exception occurred.
 
 While running game code:
-  File "game/Functions.rpy", line 1, in script
-    init python:#这里写本地增删mod涉及到的函数
-  File "game/Functions.rpy", line 4, in <module>
-    import main
-ModuleNotFoundError: No module named 'sqlite3'
+  File "game/script.rpy", line 52, in script
+    python:
+  File "game/script.rpy", line 54, in <module>
+    Submod_Choose_1()#压缩包安装
+  File "game/Functions.rpy", line 30, in Submod_Choose_1
+    Submod_Install(persistent.submod_file_dir,None)
+  File "game/Functions.rpy", line 47, in Submod_Install
+    import decompress
+SyntaxError: invalid syntax (python-packages/decompress.py, line 212)
 
 -- Full Traceback ------------------------------------------------------------
 
 Full traceback:
-  File "game/Functions.rpy", line 1, in script
-    init python:#这里写本地增删mod涉及到的函数
+  File "renpy/common/_layout/screen_main_menu.rpym", line 28, in script call
+    python hide:
+  File "game/script.rpy", line 52, in script
+    python:
   File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\ast.py", line 827, in execute
     renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
   File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\python.py", line 1178, in py_exec_bytecode
     exec(bytecode, globals, locals)
-  File "game/Functions.rpy", line 4, in <module>
-    import main
-  File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\loader.py", line 892, in load_module
-    exec(code, mod.__dict__) # type: ignore
-  File "python-packages/main.py", line 3, in <module>
-ModuleNotFoundError: No module named 'sqlite3'
+  File "game/script.rpy", line 54, in <module>
+    Submod_Choose_1()#压缩包安装
+  File "game/Functions.rpy", line 30, in Submod_Choose_1
+    Submod_Install(persistent.submod_file_dir,None)
+  File "game/Functions.rpy", line 47, in Submod_Install
+    import decompress
+  File "<frozen importlib._bootstrap>", line 1007, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 986, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 664, in _load_unlocked
+  File "<frozen importlib._bootstrap>", line 627, in _load_backward_compatible
+  File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\loader.py", line 881, in load_module
+    code = compile(source, filename, 'exec', renpy.python.old_compile_flags, 1)
+SyntaxError: invalid syntax (python-packages/decompress.py, line 212)
 
 Windows-10-10.0.19041 AMD64
 Ren'Py 8.3.4.24120703
 MAS Submod Manager 1.0
-Wed Jan  8 15:51:59 2025
+Wed Jan  8 16:20:04 2025

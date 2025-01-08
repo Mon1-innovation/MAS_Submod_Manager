@@ -1,7 +1,6 @@
 init python:#这里写本地增删mod涉及到的函数
     import os 
     import _renpytfd
-    import main
     def MAS_Basedir_Choose():
         fliter_list = ["MAS启动文件","DDLC.exe"]#过滤器得是列表形式的，第一个是描述，第二个是具体条件
         fileName_choose = _renpytfd.openFileDialog("请在本窗口选择您的MAS启动文件（DDLC.exe）","C:\"" ,fliter_list, None)#第一个参数是窗口标题，第二个参数是窗口起始路径，第三个参数是过滤器变量（好像不能直接写个列表在这里面）第四个咱也不知道干什么用的直接空着没写
@@ -45,9 +44,8 @@ init python:#这里写本地增删mod涉及到的函数
             else:
                 persistent.notify_choice = 4#如果这个傻逼选了一个文件过多的文件夹那就报错，报错内容详见script.rpy，写这里renpy会炸掉
     def Submod_Install(file_dir,dir):#识别Submod，后端干的活，我就不参与了（第一个入参是通过文件形式安装的submod的压缩包文件绝对路径，第二个入参是通过文件夹形式安装的Submod文件夹绝对路径，这两者不可能同时有赋值）
-        __init__(self, persistent.mas_basedir)
-        
-        pass
+        import decompress
+
     def Delete_Submod(location):#删除一个submod的函数，思路是传个包含了所有文件相对路径的list然后走os模块删除
         return
     def Jump_start():

@@ -2,7 +2,7 @@ import os
 import json
 import copy
 import shutil
-import sqlite3
+import sqlite3py
 import patoolib
 from basicutils import *
 
@@ -14,7 +14,7 @@ class decLogic():
         else:
             self.selfdir = getParent(os.path.split(os.path.realpath(__file__))[0])
             self.gamedir = None
-        self.conn = sqlite3.connect(joinPath(self.selfdir, ".db/meta.db"))
+        self.conn = sqlite3py.connect(joinPath(self.selfdir, ".db/meta.db"))
 
     def __del__(self):
         self.conn.close()
@@ -251,11 +251,17 @@ class decLogic():
 
 if __name__ == "__main__":
     b=decLogic()
-    #b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
+    if persistent.submod_file_dir:
+        b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
-    b.analyzeSubmod(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18")
+    b.analyzeSubmod(persistent.submod_file_dir)
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
     #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
     #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
-    print(b.listAvaliables("local_meta"))
+    filename = 'game/example.txt'
+    # 使用with语句打开文件（以写入模式），并自动处理关闭文件
+    with open(filename, 'w', encoding='utf-8') as file:
+        # 写入内容到文件
+    file.write(b.listAvaliables("local_meta"))
+    pass
 

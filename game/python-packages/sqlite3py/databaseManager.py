@@ -1,4 +1,4 @@
-import sqlite3, os
+import sqlite3py, os
 
 try: import jmespath
 except:
