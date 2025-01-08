@@ -1,0 +1,11 @@
+sqlite3py-2.0.5.dist-info/INSTALLER,sha256=zuuue4knoyJ-UwPPXg8fezS7VCrXJQrAP7zeNuwvFQg,4
+sqlite3py-2.0.5.dist-info/LICENSE,sha256=xy5aDvM37yg9Fc0Ga7IJjk2wi-XytQzE2GGnIeR-9RM,1085
+sqlite3py-2.0.5.dist-info/METADATA,sha256=sLbM4NTO2QWg47e9mXl-NuvnpaZrrtfnr5efVrCDRgc,2069
+sqlite3py-2.0.5.dist-info/RECORD,,
+sqlite3py-2.0.5.dist-info/REQUESTED,sha256=47DEQpj8HBSa-_TImW-5JCeuQeRkm5NMpJWZG3hSuFU,0
+sqlite3py-2.0.5.dist-info/WHEEL,sha256=oiQVh_5PnQM0E3gPdiz09WCNmwiHDMaGer_elqB3coM,92
+sqlite3py-2.0.5.dist-info/top_level.txt,sha256=p-pjCs8DFBo3DAlCBz7cxnKFq3jYPBt6_DbH658Yxxo,10
+sqlite3py/__init__.py,sha256=nddnWIQX3ytFm8EllmItNwbCKLXBVfHfj-v-vhfM4_4,210
+sqlite3py/__pycache__/__init__.cpython-311.pyc,,
+sqlite3py/__pycache__/databaseManager.cpython-311.pyc,,
+sqlite3py/databaseManager.py,sha256=-vSw0mHOPhFnNke__4l7oKZpBW3_MGqLYLMMrJwAbok,8528

@@ -1,0 +1,29 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/Functions.rpy", line 1, in script
+    init python:#这里写本地增删mod涉及到的函数
+  File "game/Functions.rpy", line 4, in <module>
+    import main
+ModuleNotFoundError: No module named 'sqlite3'
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "game/Functions.rpy", line 1, in script
+    init python:#这里写本地增删mod涉及到的函数
+  File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\ast.py", line 827, in execute
+    renpy.python.py_exec_bytecode(self.code.bytecode, self.hide, store=self.store)
+  File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\python.py", line 1178, in py_exec_bytecode
+    exec(bytecode, globals, locals)
+  File "game/Functions.rpy", line 4, in <module>
+    import main
+  File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\loader.py", line 892, in load_module
+    exec(code, mod.__dict__) # type: ignore
+  File "python-packages/main.py", line 3, in <module>
+ModuleNotFoundError: No module named 'sqlite3'
+
+Windows-10-10.0.19041 AMD64
+Ren'Py 8.3.4.24120703
+MAS Submod Manager 1.0
+Wed Jan  8 15:51:59 2025
