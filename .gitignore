@@ -5,3 +5,6 @@ __pycache__
 dummy
 .tmp
 .db
+game/cache/shaders.txt
+traceback.txt
+.gitignore

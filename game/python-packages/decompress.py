@@ -209,11 +209,10 @@ class decLogic():
             if modver == "unknown":
                 modver = tryVersion(getFilename(moddir))
             uname = combUname(modname, subOrSpr, modver)
-            match subOrSpr:
-                case 1:
-                    categ = "submod"
-                case 2:
-                    categ = "spritepack"
+            if subOrSpr == 1:
+                categ = "submod"
+            elif subOrSpr == 2:
+                categ = "spritepack"
             stores = [modname, '', modver, '', categ, joinPath(moddir, relPath.strip("/").strip("\\")), json.dumps(stripDict(struct[1], breakDir(relPath)), ensure_ascii=False), '']
             self.storStruct("local_meta", {"susp_name": modname}, stores)
 
@@ -252,9 +251,9 @@ class decLogic():
 if __name__ == "__main__":
     b=decLogic()
     if persistent.submod_file_dir:
-        b.decompArc(r"D:\0submanager\dummy\submod_dummy\MAICA_ChatSubmod-1.1.18.zip")
+        b.decompArc(persistent.submod_file_dir)
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
-    b.analyzeSubmod(persistent.submod_file_dir)
+        b.analyzeSubmod(selfdir + "/.tmp")
     #b.findModbase(readJson(r"D:\0submanager\MAS_Submod_Manager\storage\MAICA_ChatSubmod&v=1.1.18.json")[1])
     #b.verifySubmod(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods"))
     #b.recuComp(b.readStruct("MAICA_ChatSubmod&s=1&v=1.1.18", "submods")["structure"], b.readStruct("MAICA_ChatSubmod&s=1&v=unknown", "submods")["structure"])
