@@ -250,6 +250,7 @@ class decLogic():
 
 if __name__ == "__main__":
     b=decLogic()
+    persistent.submod_file_dir = "F:\Ren'Py_Projects\phone_messenger_fullscreen.zip"
     if persistent.submod_file_dir:
         b.decompArc(persistent.submod_file_dir)
     #print(b.recuRead(r"D:\0submanager\MAS_Submod_Manager\.tmp\MAICA_ChatSubmod-1.1.18\MAICA_ChatSubmod-1.1.18"))
@@ -261,6 +262,6 @@ if __name__ == "__main__":
     # 使用with语句打开文件（以写入模式），并自动处理关闭文件
     with open(filename, 'w', encoding='utf-8') as file:
         # 写入内容到文件
-    file.write(b.listAvaliables("local_meta"))
-    pass
+        file.write(b.listAvaliables("local_meta"))
+        pass
 

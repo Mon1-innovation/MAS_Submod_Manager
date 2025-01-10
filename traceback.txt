@@ -9,7 +9,7 @@ While running game code:
     Submod_Install(persistent.submod_file_dir,None)
   File "game/Functions.rpy", line 47, in Submod_Install
     import decompress
-SyntaxError: invalid syntax (python-packages/decompress.py, line 212)
+IndentationError: expected an indented block (python-packages/decompress.py, line 264)
 
 -- Full Traceback ------------------------------------------------------------
 
@@ -34,9 +34,9 @@ Full traceback:
   File "<frozen importlib._bootstrap>", line 627, in _load_backward_compatible
   File "F:\renpy-8series-sdk\renpy-8.3.4-sdk\renpy\loader.py", line 881, in load_module
     code = compile(source, filename, 'exec', renpy.python.old_compile_flags, 1)
-SyntaxError: invalid syntax (python-packages/decompress.py, line 212)
+IndentationError: expected an indented block (python-packages/decompress.py, line 264)
 
 Windows-10-10.0.19041 AMD64
 Ren'Py 8.3.4.24120703
 MAS Submod Manager 1.0
-Wed Jan  8 16:33:39 2025
+Fri Jan 10 21:01:49 2025
